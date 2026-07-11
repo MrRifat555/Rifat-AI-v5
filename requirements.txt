@@ -1,0 +1,7 @@
+streamlit
+google-genai
+Pillow
+pypdf
+gtts
+streamlit-mic-recorder
+SpeechRecognition
