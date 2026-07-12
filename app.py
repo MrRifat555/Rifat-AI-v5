@@ -74,3 +74,83 @@ for msg in st.session_state.messages:
 # ==========================
 
 prompt = st.chat_input("Ask me anything...")
+# ==========================
+# AI Response
+# ==========================
+
+if prompt:
+
+    # User Message Save
+    st.session_state.messages.append(
+        {
+            "role": "user",
+            "content": prompt
+        }
+    )
+
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    # ==========================
+    # Memory Save
+    # ==========================
+
+    if prompt.lower().startswith("আমার নাম"):
+
+        name = prompt.replace("আমার নাম", "").strip()
+
+        if name:
+            set_memory("name", name)
+
+    elif prompt.lower().startswith("my name is"):
+
+        name = prompt.replace("my name is", "").strip()
+
+        if name:
+            set_memory("name", name)
+
+    # Refresh Memory
+    memory = get_memory()
+
+    memory_text = ""
+
+    for key, value in memory.items():
+
+        memory_text += f"{key}: {value}\n"
+
+    full_prompt = f"""
+You are Rifat AI.
+
+User Memory:
+
+{memory_text}
+
+User Question:
+
+{prompt}
+"""
+
+    # ==========================
+    # AI Generate
+    # ==========================
+
+    try:
+
+        answer = ask_ai(full_prompt)
+
+        st.session_state.messages.append(
+            {
+                "role": "assistant",
+                "content": answer
+            }
+        )
+
+        with st.chat_message("assistant"):
+
+            st.markdown(answer)
+
+    except Exception as e:
+
+        st.error("❌ AI Error")
+
+        st.code(str(e))
