@@ -132,27 +132,37 @@ User Question:
 
     try:
 
-        # Image AI
-        if uploaded_image:
+        with st.spinner("🤖 Rifat AI is thinking..."):
 
-            answer = analyze_image(
-                uploaded_image,
-                prompt
-            )
+    # Image AI
+    if uploaded_image:
 
-        # Google Search
-        elif google_search:
+        answer = analyze_image(
+            uploaded_image,
+            prompt
+        )
 
-            answer = search_ai(
-                full_prompt
-            )
+    # PDF AI
+    elif uploaded_pdf:
 
-        # Normal AI
-        else:
+        answer = ask_pdf(
+            uploaded_pdf,
+            prompt
+        )
 
-            answer = ask_ai(
-                full_prompt
-            )
+    # Google Search
+    elif google_search:
+
+        answer = search_ai(
+            full_prompt
+        )
+
+    # Normal AI
+    else:
+
+        answer = ask_ai(
+            full_prompt
+        )
 
         # Save AI Response
         st.session_state.messages.append(
@@ -222,3 +232,12 @@ st.sidebar.download_button(
 st.divider()
 
 st.caption("🚀 Rifat AI v5 | Powered by Gemini AI")
+st.divider()
+
+st.markdown(
+    """
+Made with ❤️ by Rifat
+
+Powered by Gemini AI
+"""
+)
