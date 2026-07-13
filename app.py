@@ -1,12 +1,12 @@
-from image_ai import analyze_image
-from search import search_ai
 import streamlit as st
+from pdf_ai import ask_pdf
+from streamlit_mic_recorder import mic_recorder
+from gtts import gTTS
+import tempfile
 from ai import ask_ai
 from memory import get_memory, set_memory
-
-# ==========================
-# Page Config
-# ==========================
+from search import search_ai
+from image_ai import analyze_image
 
 st.set_page_config(
     page_title="🤖 Rifat AI v5",
@@ -14,58 +14,50 @@ st.set_page_config(
     layout="wide"
 )
 
-# ==========================
-# Sidebar
-# ==========================
+# Session
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
+# Memory
+memory = get_memory()
+
+# Sidebar
 with st.sidebar:
-search_mode = st.toggle(
-    "🌐 Internet Search",
-    value=False
-)
+
     st.title("🤖 Rifat AI")
 
-    st.write("Version 5.0")
+    st.write("Professional AI Assistant")
+
+    google_search = st.checkbox(
+        "🌐 Google Search"
+    )
 
     st.divider()
 
-    if st.button("🗑 Clear Chat"):
+    if st.button("🗑️ Clear Chat"):
 
         st.session_state.messages = []
 
         st.rerun()
 
-# ==========================
-# Session
-# ==========================
+# Main
+st.title("🤖 Rifat AI v5")
 
-if "messages" not in st.session_state:
+st.caption("Chat • Search • Image • PDF • Voice")
 
-    st.session_state.messages = []
+uploaded_image = st.file_uploader(
+    "🖼️ Upload Image",
+    type=["jpg", "jpeg", "png"]
+)
 
-# ==========================
-# Memory
-# ==========================
+if uploaded_image:
 
-memory = get_memory()
+    st.image(
+        uploaded_image,
+        use_container_width=True
+    )
 
-memory_text = ""
-
-for key, value in memory.items():
-
-    memory_text += f"{key}: {value}\n"
-
-# ==========================
-# Title
-# ==========================
-
-st.title("🤖 Rifat AI")
-
-st.caption("Professional AI Assistant")
-
-# ==========================
 # Chat History
-# ==========================
 
 for msg in st.session_state.messages:
 
@@ -73,18 +65,16 @@ for msg in st.session_state.messages:
 
         st.markdown(msg["content"])
 
-# ==========================
-# Chat Input
-# ==========================
-
-prompt = st.chat_input("Ask me anything...")
+prompt = st.chat_input(
+    "Ask Rifat AI..."
+)
 # ==========================
 # AI Response
 # ==========================
 
 if prompt:
 
-    # User Message Save
+    # User Message
     st.session_state.messages.append(
         {
             "role": "user",
@@ -95,10 +85,7 @@ if prompt:
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # ==========================
-    # Memory Save
-    # ==========================
-
+    # Save Memory
     if prompt.lower().startswith("আমার নাম"):
 
         name = prompt.replace("আমার নাম", "").strip()
@@ -113,7 +100,7 @@ if prompt:
         if name:
             set_memory("name", name)
 
-    # Refresh Memory
+    # Load Memory
     memory = get_memory()
 
     memory_text = ""
@@ -134,20 +121,31 @@ User Question:
 {prompt}
 """
 
-    # ==========================
-    # AI Generate
-    # ==========================
-
     try:
 
-        if search_mode:
+        # Image AI
+        if uploaded_image:
 
-    answer = search_ai(full_prompt)
+            answer = analyze_image(
+                uploaded_image,
+                prompt
+            )
 
-else:
+        # Google Search
+        elif google_search:
 
-    answer = ask_ai(full_prompt)
+            answer = search_ai(
+                full_prompt
+            )
 
+        # Normal AI
+        else:
+
+            answer = ask_ai(
+                full_prompt
+            )
+
+        # Save AI Response
         st.session_state.messages.append(
             {
                 "role": "assistant",
@@ -164,3 +162,54 @@ else:
         st.error("❌ AI Error")
 
         st.code(str(e))
+                # ==========================
+        # Voice Output
+        # ==========================
+
+        try:
+
+            tts = gTTS(
+                text=answer,
+                lang="bn"
+            )
+
+            tmp = tempfile.NamedTemporaryFile(
+                delete=False,
+                suffix=".mp3"
+            )
+
+            tts.save(tmp.name)
+
+            st.audio(tmp.name)
+
+        except Exception:
+
+            st.warning("🔊 Voice Output Failed")
+            # ==========================
+# Download Chat
+# ==========================
+
+chat_text = ""
+
+for msg in st.session_state.messages:
+
+    chat_text += f"{msg['role']}:\n{msg['content']}\n\n"
+
+st.sidebar.download_button(
+
+    "📥 Download Chat",
+
+    data=chat_text,
+
+    file_name="Rifat_AI_Chat.txt",
+
+    mime="text/plain"
+)
+
+# ==========================
+# Footer
+# ==========================
+
+st.divider()
+
+st.caption("🚀 Rifat AI v5 | Powered by Gemini AI")
