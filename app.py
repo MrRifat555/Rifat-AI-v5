@@ -1,3 +1,4 @@
+from image_ai import analyze_image
 from search import search_ai
 import streamlit as st
 from ai import ask_ai
