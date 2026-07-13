@@ -18,7 +18,10 @@ st.set_page_config(
 # ==========================
 
 with st.sidebar:
-
+search_mode = st.toggle(
+    "🌐 Internet Search",
+    value=False
+)
     st.title("🤖 Rifat AI")
 
     st.write("Version 5.0")
@@ -136,7 +139,13 @@ User Question:
 
     try:
 
-        answer = ask_ai(full_prompt)
+        if search_mode:
+
+    answer = search_ai(full_prompt)
+
+else:
+
+    answer = ask_ai(full_prompt)
 
         st.session_state.messages.append(
             {
