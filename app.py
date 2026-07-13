@@ -56,7 +56,10 @@ if uploaded_image:
         uploaded_image,
         use_container_width=True
     )
-
+uploaded_pdf = st.file_uploader(
+    "📄 Upload PDF",
+    type=["pdf"]
+)
 # Chat History
 
 for msg in st.session_state.messages:
@@ -64,7 +67,13 @@ for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
 
         st.markdown(msg["content"])
+st.subheader("🎤 Voice Input")
 
+audio = mic_recorder(
+    start_prompt="🎤 Speak",
+    stop_prompt="⏹️ Stop",
+    key="voice"
+)
 prompt = st.chat_input(
     "Ask Rifat AI..."
 )
