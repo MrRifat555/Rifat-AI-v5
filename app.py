@@ -1,27 +1,36 @@
 import streamlit as st
-from pdf_ai import ask_pdf
 from streamlit_mic_recorder import mic_recorder
-from gtts import gTTS
-import tempfile
+
 from ai import ask_ai
-from memory import get_memory, set_memory
 from search import search_ai
 from image_ai import analyze_image
+from pdf_ai import ask_pdf
+from memory import get_memory, set_memory
+
+from gtts import gTTS
+import tempfile
+
+# ==========================
+# Page Config
+# ==========================
 
 st.set_page_config(
-    page_title="🤖 Rifat AI v5",
+    page_title="🤖 Rifat AI",
     page_icon="🤖",
     layout="wide"
 )
 
-# Session
+# ==========================
+# Session State
+# ==========================
+
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Memory
-memory = get_memory()
-
+# ==========================
 # Sidebar
+# ==========================
+
 with st.sidebar:
 
     st.title("🤖 Rifat AI")
@@ -29,7 +38,13 @@ with st.sidebar:
     st.write("Professional AI Assistant")
 
     google_search = st.checkbox(
-        "🌐 Google Search"
+        "🌐 Google Search",
+        value=False
+    )
+
+    voice_output = st.checkbox(
+        "🔊 Voice Output",
+        value=True
     )
 
     st.divider()
@@ -40,14 +55,28 @@ with st.sidebar:
 
         st.rerun()
 
-# Main
-st.title("🤖 Rifat AI v5")
+# ==========================
+# Main Screen
+# ==========================
 
-st.caption("Chat • Search • Image • PDF • Voice")
+st.title("🤖 Rifat AI")
+
+st.caption(
+    "Chat • Image • PDF • Search • Memory • Voice"
+)
+
+# ==========================
+# Upload Files
+# ==========================
 
 uploaded_image = st.file_uploader(
     "🖼️ Upload Image",
     type=["jpg", "jpeg", "png"]
+)
+
+uploaded_pdf = st.file_uploader(
+    "📄 Upload PDF",
+    type=["pdf"]
 )
 
 if uploaded_image:
@@ -56,29 +85,35 @@ if uploaded_image:
         uploaded_image,
         use_container_width=True
     )
-uploaded_pdf = st.file_uploader(
-    "📄 Upload PDF",
-    type=["pdf"]
-)
-# Chat History
 
-for msg in st.session_state.messages:
-
-    with st.chat_message(msg["role"]):
-
-        st.markdown(msg["content"])
-st.subheader("🎤 Voice Input")
+# ==========================
+# Voice Input
+# ==========================
 
 audio = mic_recorder(
     start_prompt="🎤 Speak",
     stop_prompt="⏹️ Stop",
     key="voice"
 )
+
+# ==========================
+# Chat History
+# ==========================
+
+for msg in st.session_state.messages:
+
+    with st.chat_message(msg["role"]):
+
+        st.markdown(msg["content"])
+
+# ==========================
+# Chat Input
+# ==========================
+
 prompt = st.chat_input(
     "Ask Rifat AI..."
-)
-# ==========================
-# AI Response
+)# ==========================
+# AI Chat
 # ==========================
 
 if prompt:
@@ -94,22 +129,39 @@ if prompt:
     with st.chat_message("user"):
         st.markdown(prompt)
 
+    # ==========================
     # Save Memory
-    if prompt.lower().startswith("আমার নাম"):
+    # ==========================
+
+    if prompt.startswith("আমার নাম"):
 
         name = prompt.replace("আমার নাম", "").strip()
 
         if name:
-            set_memory("name", name)
+
+            set_memory(
+                "name",
+                name
+            )
 
     elif prompt.lower().startswith("my name is"):
 
-        name = prompt.replace("my name is", "").strip()
+        name = prompt.replace(
+            "my name is",
+            ""
+        ).strip()
 
         if name:
-            set_memory("name", name)
 
+            set_memory(
+                "name",
+                name
+            )
+
+    # ==========================
     # Load Memory
+    # ==========================
+
     memory = get_memory()
 
     memory_text = ""
@@ -130,84 +182,104 @@ User Question:
 {prompt}
 """
 
-    try:
+    # ==========================
+    # Thinking
+    # ==========================
 
-with st.spinner("🤖 Rifat AI is thinking..."):
+    with st.spinner("🤖 Thinking..."):
 
-    if uploaded_image:
-
-        answer = analyze_image(
-            uploaded_image,
-            prompt
-        )
-
-    elif uploaded_pdf:
-
-        answer = ask_pdf(
-            uploaded_pdf,
-            prompt
-        )
-
-    elif google_search:
-
-        answer = search_ai(
-            full_prompt
-        )
-
-    else:
-
-        answer = ask_ai(
-            full_prompt
-        )        
-
-    # Normal AI
-    else:
-
-        answer = ask_ai(
-            full_prompt
-        )
-
-        # Save AI Response
-        st.session_state.messages.append(
-            {
-                "role": "assistant",
-                "content": answer
-            }
-        )
-
-        with st.chat_message("assistant"):
-
-            st.markdown(answer)
-
-    except Exception as e:
-
-        st.error("❌ AI Error")
-
-        st.code(str(e))
-                # ==========================
-        # Voice Output
-        # ==========================
-
-        try:
-
-            tts = gTTS(
-                text=answer,
-                lang="bn"
-            )
-
-            tmp = tempfile.NamedTemporaryFile(
-                delete=False,
-                suffix=".mp3"
-            )
-
-            tts.save(tmp.name)
-
-            st.audio(tmp.name)
-
-        except Exception:
-
-            st.warning("🔊 Voice Output Failed")
+        try:          
             # ==========================
+            # Image AI
+            # ==========================
+
+            if uploaded_image:
+
+                answer = analyze_image(
+                    uploaded_image,
+                    prompt
+                )
+
+            # ==========================
+            # PDF AI
+            # ==========================
+
+            elif uploaded_pdf:
+
+                answer = ask_pdf(
+                    uploaded_pdf,
+                    prompt
+                )
+
+            # ==========================
+            # Google Search
+            # ==========================
+
+            elif google_search:
+
+                answer = search_ai(
+                    full_prompt
+                )
+
+            # ==========================
+            # Normal AI
+            # ==========================
+
+            else:
+
+                answer = ask_ai(
+                    full_prompt
+                )
+
+            # ==========================
+            # Assistant Message
+            # ==========================
+
+            st.session_state.messages.append(
+                {
+                    "role": "assistant",
+                    "content": answer
+                }
+            )
+
+            with st.chat_message("assistant"):
+
+                st.markdown(answer)
+                            # ==========================
+            # Voice Output
+            # ==========================
+
+            if voice_output:
+
+                try:
+
+                    tts = gTTS(
+                        text=answer,
+                        lang="bn"
+                    )
+
+                    tmp = tempfile.NamedTemporaryFile(
+                        delete=False,
+                        suffix=".mp3"
+                    )
+
+                    tts.save(tmp.name)
+
+                    st.audio(tmp.name)
+
+                except Exception:
+
+                    st.warning("🔊 Voice Output Failed")
+
+        except Exception as e:
+
+            st.error("❌ AI Error")
+
+            with st.expander("Error Details"):
+
+                st.code(str(e))
+
+# ==========================
 # Download Chat
 # ==========================
 
@@ -234,13 +306,6 @@ st.sidebar.download_button(
 
 st.divider()
 
-st.caption("🚀 Rifat AI v5 | Powered by Gemini AI")
-st.divider()
-
-st.markdown(
-    """
-Made with ❤️ by Rifat
-
-Powered by Gemini AI
-"""
+st.caption(
+    "🚀 Rifat AI v5.0 Stable | Powered by Gemini AI"
 )
