@@ -132,9 +132,8 @@ User Question:
 
     try:
 
-        with st.spinner("🤖 Rifat AI is thinking..."):
+with st.spinner("🤖 Rifat AI is thinking..."):
 
-    # Image AI
     if uploaded_image:
 
         answer = analyze_image(
@@ -142,7 +141,6 @@ User Question:
             prompt
         )
 
-    # PDF AI
     elif uploaded_pdf:
 
         answer = ask_pdf(
@@ -150,12 +148,17 @@ User Question:
             prompt
         )
 
-    # Google Search
     elif google_search:
 
         answer = search_ai(
             full_prompt
         )
+
+    else:
+
+        answer = ask_ai(
+            full_prompt
+        )        
 
     # Normal AI
     else:
