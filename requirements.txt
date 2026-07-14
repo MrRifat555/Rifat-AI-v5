@@ -4,4 +4,4 @@ Pillow
 pypdf
 gtts
 streamlit-mic-recorder
-SpeechRecognition
+
