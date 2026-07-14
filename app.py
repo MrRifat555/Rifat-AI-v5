@@ -56,3 +56,15 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 USER_ID = "rifat"
+memory = get_memory()
+
+memory_text = ""
+
+for key, value in memory.items():
+    memory_text += f"{key}: {value}\n"
+    for msg in st.session_state.messages:
+
+    with st.chat_message(msg["role"]):
+
+        st.markdown(msg["content"])
+        prompt = st.chat_input("💬 Ask Rifat AI...")
