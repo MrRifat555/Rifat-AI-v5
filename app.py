@@ -62,9 +62,35 @@ memory_text = ""
 
 for key, value in memory.items():
     memory_text += f"{key}: {value}\n"
-    for msg in st.session_state.messages:
+for msg in st.session_state.messages:
 
     with st.chat_message(msg["role"]):
 
         st.markdown(msg["content"])
-        prompt = st.chat_input("💬 Ask Rifat AI...")
+prompt = st.chat_input("💬 Ask Rifat AI...")
+if prompt:
+
+    st.session_state.messages.append(
+        {
+            "role": "user",
+            "content": prompt
+        }
+    )
+
+    save_chat(
+        USER_ID,
+        "user",
+        prompt
+    )
+
+    with st.chat_message("user"):
+        st.markdown(prompt)
+full_prompt = f"""
+Memory:
+
+{memory_text}
+
+User:
+
+{prompt}
+"""
