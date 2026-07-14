@@ -1,7 +1,7 @@
 from config import client
 from google.genai import types
 
-MODEL_NAME = "gemini-2.5-flash-lite"
+MODEL_NAME = "gemini-3.1-flash-lite"
 
 def search_ai(prompt):
 
