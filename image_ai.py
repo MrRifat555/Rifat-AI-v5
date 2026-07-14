@@ -1,7 +1,7 @@
 from PIL import Image
 from config import client
 
-MODEL_NAME = "gemini-2.5-flash"
+MODEL_NAME = "gemini-2.5-flash-lite"
 
 def analyze_image(uploaded_file, prompt):
 
