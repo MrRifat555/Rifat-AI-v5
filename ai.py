@@ -1,6 +1,6 @@
 from config import client
 
-MODEL_NAME = "gemini-2.5-flash"
+MODEL_NAME = "gemini-2.5-flash-lite"
 
 
 def ask_ai(prompt):
