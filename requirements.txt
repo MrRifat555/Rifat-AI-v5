@@ -1,7 +1,8 @@
+supabase
 streamlit
 google-genai
-Pillow
+gTTS
 pypdf
-gtts
+Pillow
 streamlit-mic-recorder
-supabase
+python-dotenv
