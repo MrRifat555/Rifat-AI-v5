@@ -10,4 +10,4 @@ Features:
 - Voice AI
 - Internet Search
 - Memory
-Rifat AI v6 Stable Release
+-Rifat AI v6 Stable Release
