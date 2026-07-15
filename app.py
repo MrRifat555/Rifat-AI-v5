@@ -166,3 +166,59 @@ with st.spinner("🤖 Thinking..."):
         st.error("❌ AI Error")
 
         st.code(str(e))
+        # ==========================
+# Voice Output
+# ==========================
+
+if voice_mode and "answer" in locals():
+
+    try:
+
+        audio_file = speak(answer)
+
+        st.audio(audio_file)
+
+    except Exception:
+
+        st.warning("Voice Output Failed")
+
+# ==========================
+# Download Chat
+# ==========================
+
+chat_text = ""
+
+for msg in st.session_state.messages:
+
+    chat_text += f"{msg['role']}: {msg['content']}\n\n"
+
+st.sidebar.download_button(
+
+    label="📥 Download Chat",
+
+    data=chat_text,
+
+    file_name="rifat_ai_chat.txt",
+
+    mime="text/plain"
+)
+
+# ==========================
+# Clear Chat
+# ==========================
+
+if st.sidebar.button("🗑️ Clear Chat"):
+
+    st.session_state.messages = []
+
+    st.rerun()
+
+# ==========================
+# Footer
+# ==========================
+
+st.divider()
+
+st.caption(
+    "🚀 Rifat AI v6 • Powered by Gemini + Supabase"
+)
