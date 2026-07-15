@@ -1,3 +1,6 @@
+from auth import login
+
+USER_ID = login()
 import streamlit as st
 import tempfile
 
@@ -55,7 +58,7 @@ with st.sidebar:
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-USER_ID = "rifat"
+
 memory = get_memory()
 
 memory_text = ""
