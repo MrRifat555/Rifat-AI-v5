@@ -94,3 +94,75 @@ User:
 
 {prompt}
 """
+with st.spinner("🤖 Thinking..."):
+
+    try:
+
+        # ==========================
+        # Image AI
+        # ==========================
+
+        if uploaded_image:
+
+            answer = analyze_image(
+                uploaded_image,
+                prompt
+            )
+
+        # ==========================
+        # PDF AI
+        # ==========================
+
+        elif uploaded_pdf:
+
+            answer = ask_pdf(
+                uploaded_pdf,
+                prompt
+            )
+
+        # ==========================
+        # Google Search
+        # ==========================
+
+        elif google_search:
+
+            answer = search_ai(
+                full_prompt
+            )
+
+        # ==========================
+        # Normal AI
+        # ==========================
+
+        else:
+
+            answer = ask_ai(
+                full_prompt
+            )
+
+        # ==========================
+        # Save Assistant Chat
+        # ==========================
+
+        save_chat(
+            USER_ID,
+            "assistant",
+            answer
+        )
+
+        st.session_state.messages.append(
+            {
+                "role": "assistant",
+                "content": answer
+            }
+        )
+
+        with st.chat_message("assistant"):
+
+            st.markdown(answer)
+
+    except Exception as e:
+
+        st.error("❌ AI Error")
+
+        st.code(str(e))
