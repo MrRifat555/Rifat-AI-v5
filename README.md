@@ -11,3 +11,4 @@ Features:
 - Internet Search
 - Memory
 -Rifat AI v6 Stable Release
+Create Rifat AI v7 core structure
